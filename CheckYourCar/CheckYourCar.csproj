@@ -9,6 +9,7 @@
     <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
     <None Remove="Data\" />
     <None Remove="System.Data.SqlClient" />
+    <None Remove="Views\Recall\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
@@ -25,5 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Views\CheckRecall\" />
   </ItemGroup>
 </Project>
