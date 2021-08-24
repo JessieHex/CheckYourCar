@@ -59,7 +59,7 @@ namespace CheckYourCar
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=CheckRecall}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }

@@ -5,24 +5,35 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Data;
-using System.Data.SqlClient;
-using System.Configuration;
-using System.IO;
-using Microsoft.VisualBasic.FileIO;
+using CheckYourCar.Models;
 
 namespace CheckYourCar
 {
     public class Program
     {
-        
+
         public static void Main(string[] args)
         {
-            DataTable dt = GetDataTabletFromCSVFile("vehicleRecallDb.csv");
-            InsertDataIntoSQLServerUsingSQLBulkCopy(dt);
+            var host = CreateHostBuilder(args).Build();
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
 
-            CreateHostBuilder(args).Build().Run();
+                try
+                {
+                    LoadData.Initialize(services);
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred loading the DB.");
+                }
+            }
+
+            host.Run();
+
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -31,69 +42,6 @@ namespace CheckYourCar
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
-        //private static string GetConnectionString()
-        //// To avoid storing the sourceConnection string in your code,
-        //// you can retrieve it from a configuration file.
-        //{
-        //    return 
-        //}
-
-        private static void InsertDataIntoSQLServerUsingSQLBulkCopy(DataTable csvFileData)
-        {
-            using (SqlConnection dbConnection = new SqlConnection(" Server = localhost; Database = checkcar;User ID = sa; Password = Sql225588; Initial Catalog = checkcar"))
-            {
-                dbConnection.Open();
-                using (SqlBulkCopy s = new SqlBulkCopy(dbConnection))
-                {
-                    s.DestinationTableName = "VehicleRecalls";
-                    for (int i = 0; i < csvFileData.Columns.Count; i++)
-                    {
-                        s.ColumnMappings.Add(i, i);
-                    }
-
-                    s.WriteToServer(csvFileData);
-                }
-            }
-        }
-
-        private static DataTable GetDataTabletFromCSVFile(string csv_file_path)
-        {
-            DataTable csvData = new DataTable();
-            try
-            {
-                using (TextFieldParser csvReader = new TextFieldParser(csv_file_path))
-                {
-                    csvReader.SetDelimiters(new string[] { "," });
-                    csvReader.HasFieldsEnclosedInQuotes = true;
-                    string[] colFields = csvReader.ReadFields();
-                    foreach (string column in colFields)
-                    {
-                        DataColumn datacolumn = new DataColumn(column);
-                        datacolumn.AllowDBNull = true;
-                        csvData.Columns.Add(datacolumn);
-                    }
-                    while (!csvReader.EndOfData)
-                    {
-                        string[] fieldData = csvReader.ReadFields();
-                        //Making empty value as null
-                        for (int i = 0; i < fieldData.Length; i++)
-                        {
-                            if (fieldData[i] == "")
-                            {
-                                fieldData[i] = null;
-                            }
-                        }
-                        csvData.Rows.Add(fieldData);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-            return csvData;
-        }
     }
 
     

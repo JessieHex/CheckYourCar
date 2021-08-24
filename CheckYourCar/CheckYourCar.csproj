@@ -10,6 +10,7 @@
     <None Remove="Data\" />
     <None Remove="System.Data.SqlClient" />
     <None Remove="Views\Recall\" />
+    <None Remove="Migrations\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
@@ -27,5 +28,6 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Views\CheckRecall\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>
