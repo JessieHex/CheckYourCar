@@ -15,10 +15,10 @@ namespace CheckYourCar.Models
 
         public DbSet<VehicleRecall> VehicleRecalls {
             get; set;
-            public DbSet<CarMake> CarsMake { get; set; }
+        }
+        public DbSet<CarMake> CarsMake { get; set; }
 
         public DbSet<CarModel> CarsModel { get; set; }
-        public DbSet<CarsRecall> CarsRecalls { get; set; }
-        public DbSet<CarUsers> CarUsers { get; set; }
+
     }
 }
