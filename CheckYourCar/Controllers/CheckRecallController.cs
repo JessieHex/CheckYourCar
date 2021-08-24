@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using CheckYourCar.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,36 +16,52 @@ namespace CheckYourCar.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        
-
-        [BindProperty]
-        public VehicleRecall VehicleRecall { get; set; }
         public CheckRecallController(ApplicationDbContext db)
         {
             _db = db;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Check()
+        // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(string MakeName, string ModelName)
         {
-            string make = HttpContext.Request.Form["MakeName"];
-            string model = HttpContext.Request.Form["ModelName"];
-            VehicleRecall = new VehicleRecall();
-            VehicleRecall = _db.VehicleRecalls.FirstOrDefault(u => u.MakeName == make && u.ModelName == model);
+            // use LINQ query to get all the genres from the database
+            IQueryable<string> makeQuery = from r in _db.VehicleRecalls
+                                            orderby r.MakeName
+                                            select r.MakeName;
+            IQueryable<string> modelQuery = from r in _db.VehicleRecalls
+                                            where r.MakeName == MakeName
+                                            orderby r.ModelName
+                                            select r.ModelName;
 
-            if (VehicleRecall == null)
+            var recalls = from recall in _db.VehicleRecalls
+                          select recall;
+
+            VehicleRecallCheckResultViewModel vehicleRecallVM;
+            if (!String.IsNullOrEmpty(MakeName) && !String.IsNullOrEmpty(ModelName))
             {
-                return Content("Not found");
+                recalls = recalls.Where(r => r.MakeName == MakeName);
+                recalls = recalls.Where(r => r.ModelName == ModelName);
+
+                vehicleRecallVM = new VehicleRecallCheckResultViewModel
+                {
+                    MakeNames = new SelectList(await makeQuery.Distinct().ToListAsync()),
+                    ModelNames = new SelectList(await modelQuery.Distinct().ToListAsync()),
+                    VehicleRecalls = await recalls.ToListAsync()
+                };
+            } else
+            {
+                vehicleRecallVM = new VehicleRecallCheckResultViewModel
+                {
+                    MakeNames = new SelectList(await makeQuery.Distinct().ToListAsync()),
+                    ModelNames = new SelectList(await modelQuery.Distinct().ToListAsync()),
+                    VehicleRecalls = null
+                };
             }
+     
+            return View(vehicleRecallVM);
 
-            return Content("Recall message: " + VehicleRecall.Comment);// View(VehicleRecall); // TODO
         }
-
+           
     }
 }

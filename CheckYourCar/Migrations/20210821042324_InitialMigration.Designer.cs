@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CheckYourCar.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210819161711_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20210821042324_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

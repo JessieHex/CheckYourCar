@@ -41,7 +41,7 @@ namespace CheckYourCar
 
         private static void InsertDataIntoSQLServerUsingSQLBulkCopy(DataTable csvFileData)
         {
-            using (SqlConnection dbConnection = new SqlConnection(" Server = localhost; Database = checkcar;User ID = sa; Password = Sql225588; Initial Catalog = checkcar"))
+            using (SqlConnection dbConnection = new SqlConnection(" Server = localhost; Database = CheckYourCar;User ID = sa; Password = Sql225588; Initial Catalog = CheckYourCar"))
             {
                 dbConnection.Open();
                 using (SqlBulkCopy s = new SqlBulkCopy(dbConnection))
