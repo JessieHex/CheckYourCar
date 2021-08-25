@@ -14,6 +14,7 @@ namespace CheckYourCar.Models
         public string ModelName { get; set; }
         public string NotificationType { get; set; }
         public string Comment { get; set; }
+        [DataType(DataType.Date)]
         public DateTime RecallDate { get; set; }
 
 

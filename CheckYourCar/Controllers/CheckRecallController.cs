@@ -34,8 +34,8 @@ namespace CheckYourCar.Controllers
                                             orderby r.ModelName
                                             select r.ModelName;
 
-            var recalls = from recall in _db.VehicleRecalls
-                          select recall;
+            var recalls = from r in _db.VehicleRecalls
+                          select r;
 
             VehicleRecallCheckResultViewModel vehicleRecallVM;
             if (!String.IsNullOrEmpty(MakeName) && !String.IsNullOrEmpty(ModelName))
@@ -47,7 +47,7 @@ namespace CheckYourCar.Controllers
                 {
                     MakeNames = new SelectList(await makeQuery.Distinct().ToListAsync()),
                     ModelNames = new SelectList(await modelQuery.Distinct().ToListAsync()),
-                    VehicleRecalls = await recalls.ToListAsync()
+                    VehicleRecalls = await recalls.OrderByDescending(r => r.RecallDate).ToListAsync()
                 };
             } else
             {
