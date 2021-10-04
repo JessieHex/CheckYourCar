@@ -2,7 +2,7 @@
 
 namespace CheckYourCar.Migrations
 {
-    public partial class modifyDateFormat : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
